@@ -25,9 +25,13 @@ namespace Calculator
             {
                 result = Convert.ToDouble(new DataTable().Compute(formula, null));
             }
-            catch (SyntaxErrorException e)
+            catch (SyntaxErrorException)
             {
                 // log here
+            }
+            catch (DivideByZeroException)
+            {
+                //log here
             }
             return double.IsInfinity(result)||double.IsNaN(result) ? 0 : result;
         }
@@ -56,17 +60,10 @@ namespace Calculator
             }
             else
             {
-                foreach (var @operator in _operators)
-                {
-                    if (formula.Contains(@operator))
-                    {
-                        var operatorIndex = formula.IndexOf(@operator);
-                        // get the value at the right of operator
-                        var currentValue = formula.Substring(operatorIndex + 1);
-                        return !currentValue.Contains(dot);
-                    }
-                }
-                return false;
+                var rightPart = formula.GetRightPartOfFormula();
+                if (string.IsNullOrEmpty(rightPart)) return true;
+                var currentValue = rightPart.Substring(1);
+                return !currentValue.Contains(dot);
             }
         }
 
@@ -85,6 +82,11 @@ namespace Calculator
                 }
             }
             return result;
+        }
+
+        public static bool IsValidatedFormula(this string formula)
+        {
+            return formula.HasOperator() && !formula.EndWithOperator();
         }
 
         private static string GetTheValidatedFormula(string formula)

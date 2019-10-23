@@ -57,37 +57,52 @@ namespace Calculator.ViewModel
         /// <param name="value"></param>
         private void EditFormula(string value)
         {
+            const string dot = ".";
             if (value.IsOperator())
             {
-                //if the value is operator and there is a operator in CurrentFormula. Calculate the value of CurrentFormula
-                if (CurrentFormula.HasOperator())
-                {
-                    var result = CurrentFormula.GetValue();
-                    //set Formula
-                    Formula = GetFormula(Formula, CurrentFormula);
-                    //set CurrentFormula
-                    CurrentFormula = $"{result.ToString()}{value}";
-                }
-                else CurrentFormula = $"{CurrentFormula}{value}";
-                //set the flag false
-                _isCalculatedWithoutOperator = false;
+                EditFormulaWhenOperatorInput(value);
             }
             else if (_isCalculatedWithoutOperator)
             {
-                if (value == ".") CurrentFormula = $"0{value}";
-                else CurrentFormula = value;
-                Formula = string.Empty;
-                _isCalculatedWithoutOperator = false;
+                EditFormulaWhenCalculatedWithOutOperator(value);
             }
-            else if (CurrentFormula == "0" && value != ".")
+            else if (CurrentFormula == "0" && value != dot)
             {
                 CurrentFormula = value;
             }
             // Add a '.' to formula should be careful and checked
-            else if (value != "." || CurrentFormula.CanAddDot())
+            else if (value != dot || CurrentFormula.CanAddDot())
             {
-                CurrentFormula = $"{CurrentFormula}{value}";
+                if (value == dot && CurrentFormula.EndWithOperator())
+                {
+                    CurrentFormula = $"{CurrentFormula}0{value}";
+                }
+                else CurrentFormula = $"{CurrentFormula}{value}";
             }
+        }
+
+        private void EditFormulaWhenOperatorInput(string value)
+        {
+            //if the value is operator and there is a operator in CurrentFormula. Calculate the value of CurrentFormula
+            if (CurrentFormula.HasOperator())
+            {
+                var result = CurrentFormula.GetValue();
+                //set Formula
+                Formula = GetFormula(Formula, CurrentFormula);
+                //set CurrentFormula
+                CurrentFormula = $"{result.ToString()}{value}";
+            }
+            else CurrentFormula = $"{CurrentFormula}{value}";
+            //set the flag false
+            _isCalculatedWithoutOperator = false;
+        }
+
+        private void EditFormulaWhenCalculatedWithOutOperator(string value)
+        {
+            if (value == ".") CurrentFormula = $"0{value}";
+            else CurrentFormula = value;
+            Formula = string.Empty;
+            _isCalculatedWithoutOperator = false;
         }
 
         /// <summary>
