@@ -4,21 +4,15 @@ using System.Windows;
 
 namespace Calculator.ViewModel
 {
-    /// <summary>
-    /// This class contains properties that the main View can data bind to.
-    /// <para>
-    /// Use the <strong>mvvminpc</strong> snippet to add bindable properties to this ViewModel.
-    /// </para>
-    /// <para>
-    /// You can also use Blend to data bind with the tool's support.
-    /// </para>
-    /// <para>
-    /// See http://www.galasoft.ch/mvvm
-    /// </para>
-    /// </summary>
     public class MainViewModel : ViewModelBase
     {
-        public RelayCommand TheCommand { get; private set; } 
+        public RelayCommand<string> EditFomulaCommand { get; private set; }
+
+        public RelayCommand ClearCommand { get; private set; }
+
+        public RelayCommand DeleteCommand { get; private set; }
+
+        public RelayCommand CalculateCommand { get; private set; }
 
         public string Formula
         {
@@ -31,19 +25,92 @@ namespace Calculator.ViewModel
         }
         private string _formula;
 
-        public string CurrentFormula { get; set; } = "1290";
+        public string CurrentFormula
+        {
+            get => _currentFormula;
+            set
+            {
+                _currentFormula = value;
+                RaisePropertyChanged("CurrentFormula");
+            }
+        }
+
+        private string _currentFormula = "0";
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
         public MainViewModel()
         {
-            TheCommand = new RelayCommand(ActionTest);
+            EditFomulaCommand = new RelayCommand<string>(EditFormula);
+
+            ClearCommand = new RelayCommand(ClearFormula);
+
+            DeleteCommand = new RelayCommand(DeleteFormula);
+
+            CalculateCommand = new RelayCommand(Calculate);
         }
 
-        private void ActionTest()
+        /// <summary>
+        /// Edit the currentFormula
+        /// </summary>
+        /// <param name="value"></param>
+        private void EditFormula(string value)
         {
-            Formula = "hello world";
+            if (value.IsOperator())
+            {
+                //if the value is operator and there is a operator in CurrentFormula. Calculate the value of CurrentFormula
+                if (CurrentFormula.HasOperator())
+                {
+                    var result = CurrentFormula.GetValue();
+                    //set Formula
+                    Formula = CurrentFormula;
+                    //set CurrentFormula
+                    CurrentFormula = $"{result.ToString()}{value}";
+                }
+                else CurrentFormula = $"{CurrentFormula}{value}";
+            }
+            else if (CurrentFormula == "0")
+            {
+                CurrentFormula = value;
+            }
+            else CurrentFormula = $"{CurrentFormula}{value}";
+        }
+
+        /// <summary>
+        /// Clear the Formula
+        /// </summary>
+        private void ClearFormula()
+        {
+            CurrentFormula = "0";
+            Formula = "";
+        }
+
+        /// <summary>
+        /// Delete the Formula
+        /// </summary>
+        private void DeleteFormula()
+        {
+            if (CurrentFormula == "0") return;
+            if (CurrentFormula.Length == 1)
+            {
+                CurrentFormula = "0";
+                return;
+            }
+            else
+            {
+                CurrentFormula = CurrentFormula.Substring(0, CurrentFormula.Length - 1);
+            }
+        }
+
+        /// <summary>
+        /// calculate the value of current formula without next operator
+        /// </summary>
+        private void Calculate()
+        {
+            var result = CurrentFormula.GetValue();
+            Formula = CurrentFormula;
+            CurrentFormula = result.ToString();
         }
     }
 }
