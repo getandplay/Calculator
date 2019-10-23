@@ -64,17 +64,47 @@ namespace Calculator.ViewModel
                 {
                     var result = CurrentFormula.GetValue();
                     //set Formula
-                    Formula = CurrentFormula;
+                    Formula = GetFormula(Formula, CurrentFormula);
                     //set CurrentFormula
                     CurrentFormula = $"{result.ToString()}{value}";
                 }
                 else CurrentFormula = $"{CurrentFormula}{value}";
+                //set the flag false
+                _isCalculatedWithoutOperator = false;
             }
-            else if (CurrentFormula == "0")
+            else if (_isCalculatedWithoutOperator)
+            {
+                if (value == ".") CurrentFormula = $"0{value}";
+                else CurrentFormula = value;
+                Formula = string.Empty;
+                _isCalculatedWithoutOperator = false;
+            }
+            else if (CurrentFormula == "0" && value != ".")
             {
                 CurrentFormula = value;
             }
-            else CurrentFormula = $"{CurrentFormula}{value}";
+            // Add a '.' to formula should be careful and checked
+            else if (value != "." || CurrentFormula.CanAddDot())
+            {
+                CurrentFormula = $"{CurrentFormula}{value}";
+            }
+        }
+
+        /// <summary>
+        /// Get correct formula values
+        /// </summary>
+        /// <param name="formula"></param>
+        /// <param name="currentFormula"></param>
+        /// <returns></returns>
+        private string GetFormula(string formula, string currentFormula)
+        {
+            //if the formula is empty, return the current formula as the formula record
+            if (string.IsNullOrEmpty(formula))
+            {
+                return currentFormula.EndWithOperator() ? currentFormula.Substring(0, currentFormula.Length - 1) : currentFormula;
+            }
+            var rightPart = currentFormula.GetRightPartOfFormula();
+            return $"{formula}{rightPart}";
         }
 
         /// <summary>
@@ -83,7 +113,7 @@ namespace Calculator.ViewModel
         private void ClearFormula()
         {
             CurrentFormula = "0";
-            Formula = "";
+            Formula = string.Empty;
         }
 
         /// <summary>
@@ -91,7 +121,7 @@ namespace Calculator.ViewModel
         /// </summary>
         private void DeleteFormula()
         {
-            if (CurrentFormula == "0") return;
+            if (CurrentFormula == "0" || _isCalculatedWithoutOperator) return;
             if (CurrentFormula.Length == 1)
             {
                 CurrentFormula = "0";
@@ -109,8 +139,11 @@ namespace Calculator.ViewModel
         private void Calculate()
         {
             var result = CurrentFormula.GetValue();
-            Formula = CurrentFormula;
+            Formula = GetFormula(Formula, CurrentFormula);
             CurrentFormula = result.ToString();
+            _isCalculatedWithoutOperator = true;
         }
+
+        private bool _isCalculatedWithoutOperator = false;
     }
 }

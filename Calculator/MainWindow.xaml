@@ -52,55 +52,76 @@
             <Setter Property="Background" Value="#56AAFC"/>
             <Setter Property="Foreground" Value="White"/>
         </Style>
+        <Style x:Key="CloseButton" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid Width="20" Height="20" Background="Transparent" Cursor="Hand">
+                            <Path x:Name="ClosePath" Stroke="red" StrokeThickness="2" Data="M6,6L14,14M6,14L14,6" Width="20" Height="20" Opacity="0.5"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ClosePath" Property="Opacity" Value="1"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
-    <Border CornerRadius="15" Background="#F7FBFC">
+    <Border CornerRadius="15" Background="#234A79" >
         <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Top"
-                    Width="330" Margin="0,10,0,0">
-            <TextBlock Text="{Binding Formula}" FontSize="16"/>
-            <TextBlock Text="{Binding CurrentFormula}" FontSize="30" Margin="0 5 0 0"/>
-            <Border Margin="0 10 0 0" Height="367" CornerRadius="0 0 15 15" Background="#234A79">
-                <Grid Margin="15,20">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <!--use DataTemplate and ListView to optimize these codes-->
-                    <Button Command="{Binding ClearCommand}" Content="C" Style="{StaticResource BlueButton}" />
-                    <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource BlueButton}" Grid.Row="0" Grid.Column="1" Content="/"/>
-                    <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource BlueButton}" Grid.Row="0" Grid.Column="2" Content="*"/>
-                    <Button Command="{Binding DeleteCommand}" CommandParameter="{x:Null}" Style="{StaticResource BlueButton}" Grid.Row="0" Grid.Column="3" Background="#Fe6864">
-                        <Image Source="./Resource/delete.png" Width="35"/>
-                    </Button>
-                    <!--Apology for this poor qualtity, Digital panel-->
-                    <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Grid.Row="1" Grid.Column="0" Content="7"/>
-                    <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Grid.Row="1" Grid.Column="1" Content="8"/>
-                    <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Grid.Row="1" Grid.Column="2" Content="9"/>
-                    <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Grid.Row="2" Grid.Column="0" Content="4"/>
-                    <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Grid.Row="2" Grid.Column="1" Content="5"/>
-                    <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Grid.Row="2" Grid.Column="2" Content="6"/>
-                    <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Grid.Row="3" Grid.Column="0" Content="1"/>
-                    <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Grid.Row="3" Grid.Column="1" Content="2"/>
-                    <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Grid.Row="3" Grid.Column="2" Content="3"/>
-                    <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Width="120" Grid.Row="4" Grid.Column="0" 
-                            Grid.ColumnSpan="2" Content="0"/>
-                    <!--other panel-->
-                    <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource BlueButton}" Grid.Row="1" Grid.Column="4" Content="-"/>
-                    <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource BlueButton}" Grid.Row="2" Grid.Column="4" Content="+"/>
-                    <Button Command="{Binding CalculateCommand}" Style="{StaticResource BlueButton}" Grid.Row="3" Grid.Column="4" Grid.RowSpan="2" 
-                            Height="120" Content="=" Tag="vertical" Background="#00E57E"/>
-                    <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Grid.Row="4" Grid.Column="2" Content="."/>
+                    Width="330" >
+            <Border CornerRadius="15,15,0,0" Height="100" Background="#F7FBFC">
+                <Grid>
+                    <StackPanel Margin="0 20 0 0">
+                        <TextBlock Text="{Binding Formula}" FontSize="16"/>
+                        <TextBlock Text="{Binding CurrentFormula}" FontSize="30" Margin="0 10 0 0"/>
+                    </StackPanel>
+                    <Button Style="{StaticResource CloseButton}" HorizontalAlignment="Right" 
+                            VerticalAlignment="Top" Margin="0,1,0,0" Click="Close_Click"/>
                 </Grid>
             </Border>
+            <Grid Margin="15,15,15,0" Height="322">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <!--Use DataTemplate and ListView to optimize these codes-->
+                <Button Command="{Binding ClearCommand}" Content="C" Style="{StaticResource BlueButton}" />
+                <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource BlueButton}" Grid.Row="0" Grid.Column="1" Content="/"/>
+                <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource BlueButton}" Grid.Row="0" Grid.Column="2" Content="*"/>
+                <Button Command="{Binding DeleteCommand}" CommandParameter="{x:Null}" Style="{StaticResource BlueButton}" Grid.Row="0" Grid.Column="3" Background="#Fe6864">
+                    <Image Source="./Resource/delete.png" Width="35"/>
+                </Button>
+                <!--Apology for this poor qualtity, Digital panel-->
+                <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Grid.Row="1" Grid.Column="0" Content="7"/>
+                <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Grid.Row="1" Grid.Column="1" Content="8"/>
+                <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Grid.Row="1" Grid.Column="2" Content="9"/>
+                <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Grid.Row="2" Grid.Column="0" Content="4"/>
+                <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Grid.Row="2" Grid.Column="1" Content="5"/>
+                <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Grid.Row="2" Grid.Column="2" Content="6"/>
+                <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Grid.Row="3" Grid.Column="0" Content="1"/>
+                <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Grid.Row="3" Grid.Column="1" Content="2"/>
+                <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Grid.Row="3" Grid.Column="2" Content="3"/>
+                <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Width="120" Grid.Row="4" Grid.Column="0" 
+                            Grid.ColumnSpan="2" Content="0"/>
+                <!--other panel-->
+                <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource BlueButton}" Grid.Row="1" Grid.Column="4" Content="-"/>
+                <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource BlueButton}" Grid.Row="2" Grid.Column="4" Content="+"/>
+                <Button Command="{Binding CalculateCommand}" Style="{StaticResource BlueButton}" Grid.Row="3" Grid.Column="4" Grid.RowSpan="2" 
+                            Height="120" Content="=" Tag="vertical" Background="#00E57E"/>
+                <Button Command="{Binding EditFomulaCommand}" Style="{StaticResource ButtonBase}" Grid.Row="4" Grid.Column="2" Content="."/>
+            </Grid>
         </StackPanel>
     </Border>
-   
 </Window>

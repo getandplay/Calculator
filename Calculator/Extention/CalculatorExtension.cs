@@ -29,10 +29,10 @@ namespace Calculator
             {
                 // log here
             }
-            return double.IsInfinity(result) ? 0 : result;
+            return double.IsInfinity(result)||double.IsNaN(result) ? 0 : result;
         }
 
-        public static bool IsEndWithOperator(this string formula)
+        public static bool EndWithOperator(this string formula)
         {
             return _operators.Any(x => formula.EndsWith(x));
         }
@@ -42,9 +42,54 @@ namespace Calculator
             return _operators.Any(x => formula.Contains(x));
         }
 
+        /// <summary>
+        /// Check if a dot can be added at the end of formula
+        /// </summary>
+        /// <param name="formula"></param>
+        /// <returns></returns>
+        public static bool CanAddDot(this string formula)
+        {
+            const string dot = ".";
+            if (!formula.HasOperator())
+            {
+                return !formula.Contains(dot);
+            }
+            else
+            {
+                foreach (var @operator in _operators)
+                {
+                    if (formula.Contains(@operator))
+                    {
+                        var operatorIndex = formula.IndexOf(@operator);
+                        // get the value at the right of operator
+                        var currentValue = formula.Substring(operatorIndex + 1);
+                        return !currentValue.Contains(dot);
+                    }
+                }
+                return false;
+            }
+        }
+
+        public static string GetRightPartOfFormula(this string formula)
+        {
+            var result = string.Empty;
+            foreach (var @operator in _operators)
+            {
+                if (formula.Contains(@operator))
+                {
+                    var operatorIndex = formula.IndexOf(@operator);
+                    // get the value at the right of operator
+                    var rightPart = formula.Substring(operatorIndex);
+                    // if rightPart length < 2 that means only operator(like 5+) and do not have any meaning in this fomula.
+                    return rightPart.Length < 2 ? string.Empty : rightPart;
+                }
+            }
+            return result;
+        }
+
         private static string GetTheValidatedFormula(string formula)
         {
-            if (formula.IsEndWithOperator())
+            if (formula.EndWithOperator())
             {
                 formula = formula.Substring(0, formula.Length - 1);
             }
